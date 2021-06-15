@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Display(c *gin.Context){
+func Display(c *gin.Context) {
 	c.Header("Access-Control-Allow-Headers", "Content-type")
 	c.Header("Access-Control-Allow-Method", "POST, GET, OPTIONS, PUT, DELETE")
 	c.Header("Access-Control-Allow-Origin", "*")
@@ -28,36 +28,32 @@ func Display(c *gin.Context){
 	if errl != nil {
 		log.Println(errl)
 	}
-
-	for loket.Next(){
+	defer loket.Close()
+	for loket.Next() {
 		var Display models.DisplayAntrian
 		errScan := loket.Scan(&idAntrian, &Display.Loket)
 		if errScan != nil {
 			log.Println(errScan)
 		}
-		e := db.SQL.Get(&Display.Antrian,`select t.no_antrian as antrian from tran_form_isian t 
+		e := db.SQL.Get(&Display.Antrian, `select t.no_antrian as antrian from tran_form_isian t 
 		left join mst_pelayanan mp on mp.id = t.id_pelayanan
 		where status = 'On Progress' and tanggal_kedatangan = $1 and id_pelayanan = $2`, dates, idAntrian)
 		if e != nil {
 			Display.Antrian = "-"
 		}
-		
 
 		arrDisplay = append(arrDisplay, Display)
 	}
 
-	
 	// log.Println("MANTAAPPPP ", loket, noAntrian)
-	
 
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = arrDisplay
-		c.Header("Content-Type", "application/json")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(c.Writer).Encode(response)
+	response.Status = 200
+	response.Message = "Success"
+	response.Data = arrDisplay
+	c.Header("Content-Type", "application/json")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	json.NewEncoder(c.Writer).Encode(response)
 }
-
 
 func TextBerjalan(c *gin.Context) {
 	c.Header("Access-Control-Allow-Headers", "Content-type")
@@ -78,7 +74,7 @@ func TextBerjalan(c *gin.Context) {
 	}
 	defer db.SQL.Close()
 
-	for q.Next(){
+	for q.Next() {
 		var t string
 		err := q.Scan(&t)
 		if err != nil {
@@ -87,11 +83,11 @@ func TextBerjalan(c *gin.Context) {
 		text = append(text, t)
 	}
 
-		response.Status = 200
-		response.Message = "Success"
-		response.Data = text
-		c.Header("Content-Type", "application/json")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		json.NewEncoder(c.Writer).Encode(response)
+	response.Status = 200
+	response.Message = "Success"
+	response.Data = text
+	c.Header("Content-Type", "application/json")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+	json.NewEncoder(c.Writer).Encode(response)
 
 }
