@@ -5,6 +5,7 @@ import (
 	"display-antrian/models"
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,27 +16,39 @@ func Display(c *gin.Context){
 	c.Header("Access-Control-Allow-Origin", "*")
 	var arrDisplay []models.DisplayAntrian
 	var response models.ResponseDisplayAntrian
+	dt := time.Now()
+	dates := dt.Format("2006.01.02")
 	db, errCon := config.ConnectSQL()
 	if errCon != nil {
 		// logger.Log(pkgName, 4, "failed to connect database, reason: " + errCon.Error())
 		log.Panic(errCon)
 	}
+	var idAntrian int
+	loket, errl := db.SQL.Queryx(`SELECT id, nama as loket FROM mst_pelayanan`)
+	if errl != nil {
+		log.Println(errl)
+	}
 
-	q, e := db.SQL.Queryx(`select mp.nama as loket, t.no_antrian as antrian from tran_form_isian t 
-	left join mst_pelayanan mp on mp.id = t.id_pelayanan
-	where status = 'On Progress'`)
-	if e != nil {
-		log.Panicln(e)
-	}
-	defer db.SQL.Close()
-	for q.Next() {
-		var da models.DisplayAntrian
-		eScan := q.StructScan(&da)
-		if eScan != nil {
-			log.Panicln(eScan)
+	for loket.Next(){
+		var Display models.DisplayAntrian
+		errScan := loket.Scan(&idAntrian, &Display.Loket)
+		if errScan != nil {
+			log.Println(errScan)
 		}
-		arrDisplay = append(arrDisplay, da)
+		e := db.SQL.Get(&Display.Antrian,`select t.no_antrian as antrian from tran_form_isian t 
+		left join mst_pelayanan mp on mp.id = t.id_pelayanan
+		where status = 'On Progress' and tanggal_kedatangan = $1 and id_pelayanan = $2`, dates, idAntrian)
+		if e != nil {
+			Display.Antrian = "-"
+		}
+		
+
+		arrDisplay = append(arrDisplay, Display)
 	}
+
+	
+	// log.Println("MANTAAPPPP ", loket, noAntrian)
+	
 
 		response.Status = 200
 		response.Message = "Success"
