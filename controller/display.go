@@ -24,7 +24,7 @@ func Display(c *gin.Context) {
 		log.Panic(errCon)
 	}
 	var idAntrian int
-	loket, errl := db.SQL.Queryx(`SELECT id, nama as loket FROM mst_pelayanan`)
+	loket, errl := db.SQL.Queryx(`SELECT id, nama as loket FROM mst_pelayanan ORDER BY id ASC`)
 	if errl != nil {
 		log.Println(errl)
 	}
