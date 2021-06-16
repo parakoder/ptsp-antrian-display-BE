@@ -44,7 +44,7 @@ func Display(c *gin.Context) {
 
 		arrDisplay = append(arrDisplay, Display)
 	}
-
+	defer db.SQL.Close()
 	// log.Println("MANTAAPPPP ", loket, noAntrian)
 
 	response.Status = 200
