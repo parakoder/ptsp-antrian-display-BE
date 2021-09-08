@@ -40,7 +40,7 @@ func main() {
 		},
 		MaxAge: 12 * time.Hour,
 	}))
-	//r.Run(":" + os.Getenv("APP_PORT"))
-	r.Run()
+	r.Run(":" + os.Getenv("APP_PORT"))
+	//r.Run()
 
 }
