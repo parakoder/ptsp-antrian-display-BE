@@ -78,7 +78,7 @@ func getJamKedatanganID() int {
 	end6 := "15:00"
 	endParse6, _ := time.Parse(layoutJam, end6)
 	jam6 := inTimeSpan(startParse6, endParse6, datesParse)
-	start7 := "21:00"
+	start7 := "00:00"
 	startParse7, _ := time.Parse(layoutJam, start7)
 
 	end7 := "23:00"
